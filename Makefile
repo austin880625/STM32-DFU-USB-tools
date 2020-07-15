@@ -11,6 +11,7 @@ all: $(libobj) $(obj)
 	gcc $(CFLAGS) $(libobj) src/stm_dfu_read_memory.o -o bin/stm_dfu_read_memory
 	gcc $(CFLAGS) $(libobj) src/stm_dfu_write_memory.o -o bin/stm_dfu_write_memory
 	gcc $(CFLAGS) $(libobj) src/stm_dfu_erase.o -o bin/stm_dfu_erase
+	gcc $(CFLAGS) $(libobj) src/stm_dfu_leave.o -o bin/stm_dfu_leave
 
 src/%.o: src/%.c
 	gcc -c $(CFLAGS) -o $@ $<

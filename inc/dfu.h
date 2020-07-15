@@ -20,5 +20,6 @@ int stm_dfu_erase(struct libusb_device_handle *handle, int mass, unsigned int ad
 int stm_dfu_get_status(struct libusb_device_handle *handle, struct stm_dfu_status *status);
 int stm_dfu_clr_status(struct libusb_device_handle *handle);
 int stm_dfu_abort(struct libusb_device_handle *handle);
+int stm_dfu_leave(struct libusb_device_handle *handle);
 
 #endif

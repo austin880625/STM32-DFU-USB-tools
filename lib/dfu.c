@@ -33,8 +33,7 @@ int stm_find_device(struct libusb_device **stm_dev) {
 }
 
 int stm_dfu_get(struct libusb_device_handle *handle, uint8_t *data) {
-	int r = libusb_control_transfer(handle, 0xA1, 0x02, 0, 0, data, 0, 1000);
-	r = libusb_control_transfer(handle, 0xA1, 0x02, 0, 0, data, 4, 1000);
+	int r = libusb_control_transfer(handle, 0xA1, 0x02, 0, 0, data, 4, 1000);
 	if(r < 0) {
 		fprintf(stderr, "failed to perform get with error %d\n", r);
 		return -1;
@@ -69,8 +68,7 @@ int stm_dfu_set_address_pointer(struct libusb_device_handle *handle, unsigned in
 		(uint8_t)(address >> 8),
 		(uint8_t)(address >> 16),
 		(uint8_t)(address >> 24)};
-	int r = libusb_control_transfer(handle, 0xA1, 0x02, 0, 0, data, 0, 1000);
-	r = libusb_control_transfer(handle, 0x21, 0x01, 0, 0, data, 5, 1000);
+	int r = libusb_control_transfer(handle, 0x21, 0x01, 0, 0, data, 5, 1000);
 	if(r < 0) {
 		fprintf(stderr, "failed to perform set_address_pointer with error %d\n", r);
 		return -1;
@@ -86,8 +84,7 @@ int stm_dfu_erase(struct libusb_device_handle *handle, int mass, unsigned int ad
 		(uint8_t)(address >> 16),
 		(uint8_t)(address >> 24)};
 	int wLength = (mass ? 1 : 5);
-	int r = libusb_control_transfer(handle, 0xA1, 0x02, 0, 0, data, 0, 1000);
-	r = libusb_control_transfer(handle, 0x21, 0x01, 0, 0, data, wLength, 1000);
+	int r = libusb_control_transfer(handle, 0x21, 0x01, 0, 0, data, wLength, 1000);
 	if(r < 0) {
 		fprintf(stderr, "failed to perform erase with error %d\n", r);
 		return -1;
@@ -118,10 +115,19 @@ int stm_dfu_clr_status(struct libusb_device_handle *handle) {
 }
 
 int stm_dfu_abort(struct libusb_device_handle *handle) {
-	uint8_t data[4] = {0};
-	int r = libusb_control_transfer(handle, 0x21, 0x06, 0, 0, data, 0, 1000);
+	int r = libusb_control_transfer(handle, 0x21, 0x06, 0, 0, NULL, 0, 1000);
 	if(r < 0) {
 		fprintf(stderr, "failed to perform abort with error %d\n", r);
+		return -1;
+	}
+	
+	return 0;
+}
+
+int stm_dfu_leave(struct libusb_device_handle *handle) {
+	int r = libusb_control_transfer(handle, 0x21, 0x01, 0, 0, NULL, 0, 1000);
+	if(r < 0) {
+		fprintf(stderr, "failed to perform leave with error %d\n", r);
 		return -1;
 	}
 	
