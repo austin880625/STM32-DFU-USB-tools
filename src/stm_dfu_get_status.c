@@ -26,7 +26,11 @@ int main() {
 	struct stm_dfu_status status = {0, {0, 0, 0}, 0, 0};
 	r = stm_dfu_clr_status(handle);
 	r = stm_dfu_get_status(handle, &status);
+	unsigned int bwPollTimeout = (status.bwPollTimeout[0] |
+			status.bwPollTimeout[1] << 8 |
+			status.bwPollTimeout[2] << 16);
 	printf("bStatus: %02x\n", status.bStatus);
+	printf("bwPollTimeout: %lu\n", bwPollTimeout);
 	printf("bState: %02x\n", status.bState);
 
 	libusb_close(handle);
