@@ -44,8 +44,7 @@ int stm_dfu_get(struct libusb_device_handle *handle, uint8_t *data) {
 }
 
 int stm_dfu_read_memory(struct libusb_device_handle *handle, uint8_t *data, size_t block_num, size_t len) {
-	int r = libusb_control_transfer(handle, 0xA1, 0x02, 0, 0, data, 0, 1000);
-	r = libusb_control_transfer(handle, 0xA1, 0x02, block_num, 0, data, len, 1000);
+	int r = libusb_control_transfer(handle, 0xA1, 0x02, block_num, 0, data, len, 1000);
 	if(r < 0) {
 		fprintf(stderr, "failed to perform read_memory with error %d\n", r);
 		return -1;
@@ -55,8 +54,7 @@ int stm_dfu_read_memory(struct libusb_device_handle *handle, uint8_t *data, size
 }
 
 int stm_dfu_write_memory(struct libusb_device_handle *handle, uint8_t *data, size_t block_num, size_t len) {
-	int r = libusb_control_transfer(handle, 0xA1, 0x02, 0, 0, data, 0, 1000);
-	r = libusb_control_transfer(handle, 0x21, 0x01, block_num, 0, data, len, 1000);
+	int r = libusb_control_transfer(handle, 0x21, 0x01, block_num, 0, data, len, 1000);
 	if(r < 0) {
 		fprintf(stderr, "failed to perform write_memory with error %d\n", r);
 		return -1;

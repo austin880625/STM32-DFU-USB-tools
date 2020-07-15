@@ -10,18 +10,15 @@ int main(int argc, char *argv[]) {
 	int r = 0;
 
 	unsigned int address = 0x08000000;
-	size_t total_len = 16;
+	int mass = 0;
 	char opt = '\0';
-	while((opt = getopt(argc, argv, "a:s:")) != -1) {
+	while((opt = getopt(argc, argv, "ma:")) != -1) {
 		switch(opt) {
 		case 'a':
 			sscanf(optarg, "%x", &address);
 			break;
-		case 's':
-			sscanf(optarg, "%d", &total_len);
-			if(total_len < 0) {
-				total_len = 16;
-			}
+		case 'm':
+			mass = 1;
 			break;
 		default:
 			fprintf(stderr, "Unrecognized argument\n");
@@ -46,13 +43,7 @@ int main(int argc, char *argv[]) {
 		return r;
 	}
 
-	unsigned int current_address = address;
 	struct stm_dfu_status status = {0, {0, 0, 0}, 0, 0};
-	uint8_t buf[2048];
-	size_t block_size = 2048;
-	if(total_len < block_size) {
-		block_size = total_len;
-	}
 	while(status.bState != 0x02) {
 		stm_dfu_clr_status(handle);
 		stm_dfu_get_status(handle, &status);
@@ -60,27 +51,16 @@ int main(int argc, char *argv[]) {
 	stm_dfu_set_address_pointer(handle, address);
 	stm_dfu_get_status(handle, &status);
 
-	while(current_address < address + total_len) {
-		while(status.bState != 0x02) {
-			stm_dfu_clr_status(handle);
-			stm_dfu_get_status(handle, &status);
-		}
-		size_t block_num = ((current_address - address) / block_size) + 2;
-		r = stm_dfu_read_memory(handle, buf, block_num, block_size);
+	while(status.bState != 0x02) {
+		stm_dfu_clr_status(handle);
 		stm_dfu_get_status(handle, &status);
-		for(int i = 0; i<block_size; i+=16) {
-			printf("%08x:\t", current_address);
-			for(int j=0; j<16; j+=2) {
-				printf("%02x%02x ", buf[i+j], buf[i+j+1]);
-			}
-			printf("\n");
-			current_address += 16;
-		}
-
 	}
+	stm_dfu_erase(handle, mass, address);
+	stm_dfu_get_status(handle, &status);
 
 	libusb_close(handle);
 	libusb_exit(NULL);
 
 	return 0;
 }
+
