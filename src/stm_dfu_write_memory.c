@@ -89,24 +89,40 @@ int main(int argc, char *argv[]) {
 	}
 
 	unsigned int current_address = address;
+	unsigned int base_address = address;
 	struct stm_dfu_status status = {0, {0, 0, 0}, 0, 0};
+	size_t block_size = 2048;
 	uint8_t buf[2048];
+	while(status.bState != 0x02) {
+		stm_dfu_clr_status(handle);
+		stm_dfu_get_status(handle, &status);
+	}
+	stm_dfu_set_address_pointer(handle, address);
+	stm_dfu_get_status(handle, &status);
 
 	while(current_address < address + total_len) {
+		fseek(fp, current_address - address, SEEK_SET);
+		size_t count = fread(buf, 1, block_size, fp);
+		for(size_t i = count; i<block_size; i++)buf[i] = 0xff;
+
 		while(status.bState != 0x02) {
 			stm_dfu_clr_status(handle);
 			stm_dfu_get_status(handle, &status);
 		}
-		size_t block_num = ((current_address - address) / 16) + 2;
-		stm_dfu_read_memory(handle, buf, block_num, 16);
+		size_t block_num = ((current_address - base_address) / block_size) + 2;
+		stm_dfu_write_memory(handle, buf, block_num, block_size);
 		stm_dfu_get_status(handle, &status);
-		printf("%08x:\t", current_address);
-		for(int i=0; i<16; i+=2) {
-			printf("%02x%02x ", buf[i], buf[i+1]);
-		}
-		printf("\n");
 
-		current_address += page_size;
+		current_address += block_size;
+		if(current_address - base_address >= page_size) {
+			base_address = current_address;
+			while(status.bState != 0x02) {
+				stm_dfu_clr_status(handle);
+				stm_dfu_get_status(handle, &status);
+			}
+			stm_dfu_set_address_pointer(handle, base_address);
+			stm_dfu_get_status(handle, &status);
+		}
 	}
 
 	if(fp) {

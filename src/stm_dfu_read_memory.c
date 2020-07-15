@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 		r = stm_dfu_read_memory(handle, buf, block_num, block_size);
 		stm_dfu_get_status(handle, &status);
 		for(int i = 0; i<block_size; i+=16) {
-			printf("%08x:\t", current_address);
+			printf("%08x: ", current_address);
 			for(int j=0; j<16; j+=2) {
 				printf("%02x%02x ", buf[i+j], buf[i+j+1]);
 			}

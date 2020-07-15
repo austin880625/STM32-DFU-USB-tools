@@ -9,6 +9,7 @@ all: $(libobj) $(obj)
 	mkdir -p bin
 	gcc $(CFLAGS) $(libobj) src/stm_dfu_get_status.o -o bin/stm_dfu_get_status
 	gcc $(CFLAGS) $(libobj) src/stm_dfu_read_memory.o -o bin/stm_dfu_read_memory
+	gcc $(CFLAGS) $(libobj) src/stm_dfu_write_memory.o -o bin/stm_dfu_write_memory
 	gcc $(CFLAGS) $(libobj) src/stm_dfu_erase.o -o bin/stm_dfu_erase
 
 src/%.o: src/%.c
