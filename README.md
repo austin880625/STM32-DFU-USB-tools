@@ -3,6 +3,8 @@
 This project implements most funtions of the USB DFU protocol specified in STMicroelectronic AN3156 application note.
 It can be used to program the flash memory on STM32 microcontrollers over USB without IDEs/JTAG/SWD/vendor-provided utilities.
 
+For more complete implementation please see [DfuSe](http://www.emcu.it/DFU-DfuSe/DFU-DfuSe.html) or [dfu-util](http://dfu-util.sourceforge.net/)
+
 ## Tested Environment
 
 This project is developed and tested on the following platform:
