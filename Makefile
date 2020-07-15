@@ -6,6 +6,7 @@ obj:=$(patsubst %.c,%.o,$(src))
 CFLAGS=-Iinc `pkg-config --cflags libusb` -lusb-1.0
 
 all: $(libobj) $(obj)
+	mkdir bin
 	gcc $(CFLAGS) $(libobj) src/stm_dfu_get_status.o -o bin/stm_dfu_get_status
 	gcc $(CFLAGS) $(libobj) src/stm_dfu_read_memory.o -o bin/stm_dfu_read_memory
 
